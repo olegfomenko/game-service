@@ -1,5 +1,5 @@
 allOf:
-  - $ref: '#/components/schemas/PayUserKey'
+  - $ref: '#/components/schemas/PayPlayerKey'
   - type: object
     required:
       - attributes
@@ -8,13 +8,10 @@ allOf:
       attributes:
         type: object
         required:
-          - user_acc_id
           - amount
           - source_balance_id
           - owner_id
         properties:
-          user_acc_id:
-            type: string
           amount:
             type: integer
             format: regources.Amount

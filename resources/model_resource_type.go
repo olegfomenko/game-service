@@ -10,7 +10,7 @@ type ResourceType string
 const (
 	CREATE_GAME   ResourceType = "create-game"
 	PAY_GAME      ResourceType = "pay-game"
+	PAY_PLAYER    ResourceType = "pay-player"
 	PAY_TEAM      ResourceType = "pay-team"
-	PAY_USER      ResourceType = "pay-user"
 	SELECT_WINNER ResourceType = "select-winner"
 )

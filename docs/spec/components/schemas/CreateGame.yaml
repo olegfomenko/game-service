@@ -9,7 +9,7 @@ allOf:
         type: object
         required:
           - name_competition
-          - priсe
+          - amount
           - team1
           - team2
           - date
@@ -27,10 +27,12 @@ allOf:
             type: string
           name_competition:
             type: string
-          price:
+          amount:
             type: integer
             format: regources.Amount
           team1:
             type: object
           team2:
             type: object
+          stream_link:
+            type: string

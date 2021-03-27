@@ -7,9 +7,9 @@ parameters:
       type: int
 post:
   tags:
-  - PayGame
-  summary: PayGame
-  operationId: payGame
+  - PayPlayer
+  summary: PayPlayer
+  operationId: payPlayer
   requestBody:
     content:
       application/vnd.api+json:
@@ -20,7 +20,7 @@ post:
           properties:
             data:
               type: object
-              $ref: '#/components/schemas/PayGame'
+              $ref: '#/components/schemas/PayPlayer'
   responses:
     '201':
       description: Created
