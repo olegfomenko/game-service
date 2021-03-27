@@ -27,25 +27,25 @@ func (c *Connector) GetStringKeyValue(key string) (string, error) {
 	return *val.Str, nil
 }
 
-func (c *Connector) GetUint32KeyValue(key string) (*uint32, error) {
+func (c *Connector) GetUint32KeyValue(key string) (uint32, error) {
 	val, err := c.kv.get(c, key)
 	if err != nil {
-		return nil, errors.Wrap(err, "failed to get kv value")
+		return 0, errors.Wrap(err, "failed to get kv value")
 	}
 
 	if val == nil {
-		return nil, nil
+		return 0, nil
 	}
 
 	if val.Type != xdr.KeyValueEntryTypeUint32 {
-		return nil, errors.Wrap(err, "value is not of type string")
+		return 0, errors.Wrap(err, "value is not of type string")
 	}
 
 	if val.U32 == nil {
-		return nil, errors.New("kv value is nil")
+		return 0, errors.New("kv value is nil")
 	}
 
-	return val.U32, nil
+	return *val.U32, nil
 }
 
 type kvGetter struct{}

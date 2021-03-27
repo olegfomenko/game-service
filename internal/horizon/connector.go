@@ -49,6 +49,14 @@ func NewConnector(cli *signed.Client, source keypair.Address, signer keypair.Ful
 	}
 }
 
+func (c *Connector) Signer() keypair.Full {
+	return c.signer
+}
+
+func (c *Connector) Source() keypair.Full {
+	return c.signer
+}
+
 func (c *Connector) TxHash(envelope string) (string, error) {
 	builder, err := c.TXBuilder()
 	if err != nil {
