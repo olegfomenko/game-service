@@ -1,21 +1,8 @@
 type: object
 required:
   - team_name
-  - acc1
-  - acc2
-  - acc3
-  - acc4
-  - acc5
 properties:
     team_name:
       type: string
-    acc1:
-      type: string
-    acc2:
-      type: string
-    acc3:
-      type: string
-    acc4:
-      type: string
-    acc5:
-      type: string
+    players:
+      type: object
