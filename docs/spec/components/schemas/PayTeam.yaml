@@ -7,10 +7,9 @@ allOf:
     properties:
       attributes:
         type: object
-        required: [
-            team_name,
-            amount
-        ]
+        required:
+          - team_name,
+          - amount
         properties:
           team_name:
             type: string

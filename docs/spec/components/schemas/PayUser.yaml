@@ -7,10 +7,9 @@ allOf:
     properties:
       attributes:
         type: object
-        required: [
-            user_acc_id,
-            amount
-        ]
+        required:
+          - user_acc_id,
+          - amount
         properties:
           user_acc_id:
             type: string
