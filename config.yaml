@@ -6,8 +6,13 @@ listener:
   addr: :80
 
 cop:
-  disabled: true
+  endpoint: http://cop
+  upstream: http://game-service
+  service_name: "game-service"
+  service_port: "80"
+  service_prefix: "/integrations/game-service/"
 
 horizon:
   endpoint: "http://traefik"
   signer: SAMJKTZVW5UOHCDK5INYJNORF2HRKYI72M5XSZCBYAHQHR34FFR4Z6G4
+  source: GBA4EX43M25UPV4WIE6RRMQOFTWXZZRIPFAI5VPY6Z2ZVVXVWZ6NEOOB
