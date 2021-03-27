@@ -1,0 +1,12 @@
+log:
+  disable_sentry: true
+
+listener:
+  addr: :8000 # TODO configure and rm this TODO
+
+cop:
+  disabled: true
+  endpoint: "http://..."
+  upstream: "http://..."
+  service_name: game-service
+  service_port: 80
