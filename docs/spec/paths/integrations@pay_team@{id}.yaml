@@ -1,0 +1,32 @@
+parameters:
+  - name: id
+    in: path
+    description: organazer_acc_id
+    required: true
+    schema:
+      type: int
+post:
+  tags:
+  - PayGame
+  summary: PayTeam
+  operationId: payTeam
+  requestBody:
+    content:
+      application/vnd.api+json:
+        schema:
+          type: object
+          required:
+          - data
+          properties:
+            data:
+              type: object
+              $ref: '#/components/schemas/PayTeam'
+  responses:
+    '201':
+      description: Created
+    '400':
+      description: invalid request
+    '401':
+      description: not allowed
+    '500':
+      description: internal error
