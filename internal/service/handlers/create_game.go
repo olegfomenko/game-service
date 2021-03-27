@@ -27,6 +27,7 @@ func CreateGame(w http.ResponseWriter, r *http.Request) {
 		"date":  request.Data.Attributes.Date,
 		"team1": request.Data.Attributes.Team1,
 		"team2": request.Data.Attributes.Team2,
+		"stream_link": request.Data.Attributes.StreamLink,
 	})
 	if err != nil {
 		Log(r).WithError(err).Error("marshaling details to JSON")
@@ -39,7 +40,7 @@ func CreateGame(w http.ResponseWriter, r *http.Request) {
 	date = strings.ReplaceAll(date, ":", "")
 
 	assetCode := "GAM" + date
-	amount := uint64(*request.Data.Attributes.Price)
+	amount := uint64(request.Data.Attributes.Amount)
 
 	assetType, err := Connector(r).GetUint32KeyValue("asset_type:gam")
 	if err != nil {

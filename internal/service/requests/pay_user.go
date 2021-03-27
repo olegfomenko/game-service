@@ -8,20 +8,20 @@ import (
 	"net/http"
 )
 
-func NewPayUser (r *http.Request) (resources.PayUserResponse, error)  {
-	var request resources.PayUserResponse
+func NewPayPlayer(r *http.Request) (resources.PayPlayerResponse, error)  {
+	var request resources.PayPlayerResponse
 
 	if err := json.NewDecoder(r.Body).Decode(&request); err != nil {
 		return request, errors.Wrap(err, "failed to unmarshal")
 	}
 
-	return request, validatePayUser(request)
+	return request, validatePayPlayer(request)
 }
 
 
-func validatePayUser(r resources.PayUserResponse) error {
+func validatePayPlayer(r resources.PayPlayerResponse) error {
 	return validation.Errors{
-		"/data/attributes/user_acc_id":       validation.Validate(r.Data.Attributes.UserAccId, validation.Required),
+		"/data/attributes/owner_id":       validation.Validate(r.Data.Attributes.OwnerId, validation.Required),
 		"/data/attributes/amount":      validation.Validate(r.Data.Attributes.Amount, validation.Required),
 	}.Filter()
 }
