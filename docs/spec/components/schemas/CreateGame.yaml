@@ -13,7 +13,13 @@ allOf:
           - team1
           - team2
           - date
+          - asset_code
+          - source_balance_id
         properties:
+          asset_code:
+            type: string
+          source_balance_id:
+            type: string
           date:
             type: string
           name_competition:
