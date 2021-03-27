@@ -1,12 +1,13 @@
 log:
   disable_sentry: true
+  level: debug
 
 listener:
-  addr: :8000 # TODO configure and rm this TODO
+  addr: :80
 
 cop:
   disabled: true
-  endpoint: "http://..."
-  upstream: "http://..."
-  service_name: game-service
-  service_port: 80
+
+horizon:
+  endpoint: "http://traefik"
+  signer: SAMJKTZVW5UOHCDK5INYJNORF2HRKYI72M5XSZCBYAHQHR34FFR4Z6G4
