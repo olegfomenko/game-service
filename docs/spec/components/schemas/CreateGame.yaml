@@ -15,6 +15,7 @@ allOf:
           - date
           - asset_code
           - source_balance_id
+          - owner_id
         properties:
           asset_code:
             type: string
@@ -28,6 +29,6 @@ allOf:
             type: integer
             format: regources.Amount
           team1:
-            type: Team
+            type: object
           team2:
-            type: Team
+            type: object
