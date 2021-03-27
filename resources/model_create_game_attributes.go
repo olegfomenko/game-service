@@ -10,6 +10,7 @@ type CreateGameAttributes struct {
 	AssetCode       string                 `json:"asset_code"`
 	Date            string                 `json:"date"`
 	NameCompetition string                 `json:"name_competition"`
+	OwnerId         string                 `json:"owner_id"`
 	Price           *regources.Amount      `json:"price,omitempty"`
 	SourceBalanceId string                 `json:"source_balance_id"`
 	Team1           map[string]interface{} `json:"team1"`

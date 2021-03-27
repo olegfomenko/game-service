@@ -17,6 +17,8 @@ allOf:
           - source_balance_id
           - owner_id
         properties:
+          owner_id:
+            type: string
           asset_code:
             type: string
           source_balance_id:
