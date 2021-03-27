@@ -1,0 +1,18 @@
+allOf:
+  - $ref: '#/components/schemas/SelectWinnerKey'
+  - type: object
+    required:
+      - attributes
+      - relationships
+    properties:
+      attributes:
+        type: object
+        required: [
+            game_coin_id,
+            team_name
+        ]
+        properties:
+          game_coin_id:
+            type: string
+          team_name:
+            type: string
