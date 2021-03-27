@@ -20,6 +20,7 @@ func (s *service) router() chi.Router {
 
 	r.Route("/integrations/game-service", func(r chi.Router) {
 		r.Post("/create_game", handlers.CreateGame)
+		r.Post("/pay_game", handlers.PayGame)
 	})
 
 	return r

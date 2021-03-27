@@ -22,6 +22,7 @@ func PayGame(w http.ResponseWriter, r *http.Request) {
 	amount := uint64(request.Data.Attributes.Amount)
 
 	//TODO maybe use details as comment with donate
+	//TODO fix reference
 	issueGam := &xdrbuild.CreateIssuanceRequest{
 		Reference: strconv.Itoa(time.Now().Nanosecond()),
 		Receiver:  request.Data.Attributes.OwnerId,
@@ -38,13 +39,13 @@ func PayGame(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	// TODo fix reference
+	// TODO fix reference
 	paymentToAdmin, _ := xdrbuild.CreatePaymentForAccount(xdrbuild.CreatePaymentForAccountOpts{
 		SourceAccountID:      &orgBalance.Relationships.Owner.Data.ID,
 		SourceBalanceID:      orgBalance.ID,
 		DestinationAccountID: Connector(r).Signer().Address(),
 		Amount:               amount,
-		Subject:              "Game payment",
+		Subject:              "Game payment from user",
 		Reference:            strconv.Itoa(time.Now().Nanosecond()),
 		Fee: xdrbuild.Fee{
 			SourceFixed:        0,
@@ -62,4 +63,5 @@ func PayGame(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
+	w.WriteHeader(http.StatusOK)
 }
