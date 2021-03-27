@@ -10,9 +10,15 @@ allOf:
         required:
           - user_acc_id
           - amount
+          - source_balance_id
+          - owner_id
         properties:
           user_acc_id:
             type: string
           amount:
             type: integer
             format: regources.Amount
+          owner_id:
+            type: string
+          source_balance_id:
+              type: string
