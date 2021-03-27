@@ -1,0 +1,18 @@
+allOf:
+  - $ref: '#/components/schemas/PayGameKey'
+  - type: object
+    required:
+      - attributes
+      - relationships
+    properties:
+      attributes:
+        type: object
+        required:
+          - game_coin_id,
+          - amount
+        properties:
+          game_coin_id:
+            type: string
+          amount:
+            type: integer
+            format: regources.Amount
