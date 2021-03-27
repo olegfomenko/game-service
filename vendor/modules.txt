@@ -43,7 +43,7 @@ github.com/hashicorp/hcl/json/scanner
 github.com/hashicorp/hcl/json/token
 # github.com/konsorten/go-windows-terminal-sequences v1.0.3
 github.com/konsorten/go-windows-terminal-sequences
-# github.com/magiconair/properties v1.8.0
+# github.com/magiconair/properties v1.8.1
 github.com/magiconair/properties
 # github.com/mitchellh/mapstructure v1.1.2
 github.com/mitchellh/mapstructure
@@ -55,21 +55,23 @@ github.com/nullstyle/go-xdr/xdr3
 github.com/oklog/ulid
 # github.com/pelletier/go-toml v1.2.0
 github.com/pelletier/go-toml
-# github.com/pkg/errors v0.8.1
+# github.com/pkg/errors v0.9.1
 github.com/pkg/errors
 # github.com/sirupsen/logrus v1.6.0
 github.com/sirupsen/logrus
 # github.com/spf13/afero v1.1.2
 github.com/spf13/afero
 github.com/spf13/afero/mem
-# github.com/spf13/cast v1.3.0
+# github.com/spf13/cast v1.3.1
 github.com/spf13/cast
 # github.com/spf13/jwalterweatherman v1.0.0
 github.com/spf13/jwalterweatherman
 # github.com/spf13/pflag v1.0.3
 github.com/spf13/pflag
-# github.com/spf13/viper v1.3.2
+# github.com/spf13/viper v1.6.2
 github.com/spf13/viper
+# github.com/subosito/gotenv v1.2.0
+github.com/subosito/gotenv
 # github.com/xr9kayu/logrus v0.7.2
 github.com/xr9kayu/logrus/sentry
 # gitlab.com/distributed_lab/ape v1.5.0
@@ -77,6 +79,7 @@ github.com/xr9kayu/logrus/sentry
 gitlab.com/distributed_lab/ape
 gitlab.com/distributed_lab/ape/problems
 # gitlab.com/distributed_lab/figure v2.1.0+incompatible
+## explicit
 gitlab.com/distributed_lab/figure
 # gitlab.com/distributed_lab/json-api-connector v0.2.3
 ## explicit
@@ -123,6 +126,9 @@ gitlab.com/tokend/go/strkey
 gitlab.com/tokend/go/xdr
 gitlab.com/tokend/go/xdrbuild
 gitlab.com/tokend/go/xdrbuild/internal
+# gitlab.com/tokend/identity-storage v0.0.0-20210303191919-3ff99a92c0b3
+## explicit
+gitlab.com/tokend/identity-storage/resources
 # gitlab.com/tokend/keypair v0.0.0-20190412110653-b9d7e0c8b312
 ## explicit
 gitlab.com/tokend/keypair
@@ -142,5 +148,7 @@ golang.org/x/sys/unix
 # golang.org/x/text v0.3.3
 golang.org/x/text/transform
 golang.org/x/text/unicode/norm
+# gopkg.in/ini.v1 v1.51.0
+gopkg.in/ini.v1
 # gopkg.in/yaml.v2 v2.2.8
 gopkg.in/yaml.v2

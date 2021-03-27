@@ -12,51 +12,16 @@ allOf:
           - priсe
           - team1
           - team2
+          - date
         properties:
+          date:
+            type: string
           name_competition:
             type: string
           price:
             type: integer
             format: regources.Amount
           team1:
-            type: object
-            required:
-              - team_name
-              - acc1
-              - acc2
-              - acc3
-              - acc4
-              - acc5
-            team_name:
-              type: string
-            acc1:
-              type: string
-            acc2:
-              type: string
-            acc3:
-              type: string
-            acc4:
-              type: string
-            acc5:
-              type: string
+            type: Team
           team2:
-            type: object
-            required:
-              - team_name
-              - acc1
-              - acc2
-              - acc3
-              - acc4
-              - acc5
-            team_name:
-              type: string
-            acc1:
-              type: string
-            acc2:
-              type: string
-            acc3:
-              type: string
-            acc4:
-              type: string
-            acc5:
-              type: string
+            type: Team
