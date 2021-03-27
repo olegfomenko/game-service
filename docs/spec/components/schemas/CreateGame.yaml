@@ -8,55 +8,55 @@ allOf:
       attributes:
         type: object
         required:
-          - name_copetition
+          - name_competition
           - priсe
           - team1
           - team2
         properties:
-          name:
+          name_competition:
             type: string
           price:
             type: integer
             format: regources.Amount
           team1:
             type: object
-              required:
-                - team_name
-                - acc1
-                - acc2
-                - acc3
-                - acc4
-                - acc5
-              team_name:
-                type: string
-              acc1:
-                type: string
-              acc2:
-                type: string
-              acc3:
-                type: string
-              acc4:
-                type: string
-              acc5:
-                type: string
+            required:
+              - team_name
+              - acc1
+              - acc2
+              - acc3
+              - acc4
+              - acc5
+            team_name:
+              type: string
+            acc1:
+              type: string
+            acc2:
+              type: string
+            acc3:
+              type: string
+            acc4:
+              type: string
+            acc5:
+              type: string
           team2:
             type: object
-              required:
-                - team_name
-                - acc1
-                - acc2
-                - acc3
-                - acc4
-                - acc5
-              team_name:
-                type: string
-              acc1:
-                type: string
-              acc2:
-                type: string
-              acc3:
-                type: string
-              acc4:
-                type: string
-              acc5:
-                type: string
+            required:
+              - team_name
+              - acc1
+              - acc2
+              - acc3
+              - acc4
+              - acc5
+            team_name:
+              type: string
+            acc1:
+              type: string
+            acc2:
+              type: string
+            acc3:
+              type: string
+            acc4:
+              type: string
+            acc5:
+              type: string

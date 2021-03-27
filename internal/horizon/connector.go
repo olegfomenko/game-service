@@ -38,8 +38,7 @@ type Connector struct {
 	signer keypair.Full
 }
 
-func NewConnector(cli *signed.Client, source keypair.Address, signer keypair.Full,
-) *Connector {
+func NewConnector(cli *signed.Client, source keypair.Address, signer keypair.Full) *Connector {
 	return &Connector{
 		cli:        cli,
 		Submitter:  submit.New(cli),

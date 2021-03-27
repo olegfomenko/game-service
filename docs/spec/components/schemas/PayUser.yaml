@@ -8,7 +8,7 @@ allOf:
       attributes:
         type: object
         required:
-          - user_acc_id,
+          - user_acc_id
           - amount
         properties:
           user_acc_id:

@@ -8,7 +8,7 @@ allOf:
       attributes:
         type: object
         required:
-          - game_coin_id,
+          - game_coin_id
           - team_name
         properties:
           game_coin_id:

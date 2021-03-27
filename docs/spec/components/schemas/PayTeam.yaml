@@ -8,7 +8,7 @@ allOf:
       attributes:
         type: object
         required:
-          - team_name,
+          - team_name
           - amount
         properties:
           team_name:
