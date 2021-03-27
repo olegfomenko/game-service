@@ -3,7 +3,6 @@
  */
 
 package resources
-
 import regources "gitlab.com/tokend/regources/generated"
 
 type PayTeamAttributes struct {
