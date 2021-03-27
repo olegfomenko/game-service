@@ -2,8 +2,8 @@ package requests
 
 import (
 	"encoding/json"
+	"fmt"
 	validation "github.com/go-ozzo/ozzo-validation"
-	"github.com/olegfomenko/game-service/internal/service/handlers"
 	"github.com/olegfomenko/game-service/resources"
 	"gitlab.com/distributed_lab/logan/v3/errors"
 	"io/ioutil"
@@ -17,10 +17,11 @@ func NewCreateGame(r *http.Request) (resources.CreateGameResponse, error) {
 		return request, errors.Wrap(err, "failed to unmarshal")
 	}
 
+	// TODO remove log
 	if data, err := ioutil.ReadAll(r.Body); err != nil {
 		return request, errors.Wrap(err, "failed to unmarshal")
 	} else {
-		handlers.Log(r).Info("got create request", string(data))
+		fmt.Println("got create request", string(data))
 	}
 
 	return request, validateCreateGame(request)
