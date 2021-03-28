@@ -26,6 +26,7 @@ func CreateGame(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
+	// Parsing details
 	details, err := parseDetails(map[string]interface{}{
 		"organizer":        request.Data.Attributes.OwnerId,
 		"date":             request.Data.Attributes.Date,
@@ -40,16 +41,16 @@ func CreateGame(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
+	// Parsing date provided in details
 	date, err := parseGameDate(request.Data.Attributes.Date)
 	if err != nil {
 		Log(r).WithError(err).Error("error parsing date")
 		ape.RenderErr(w, problems.BadRequest(err)...)
 		return
 	}
-
 	assetCode := "GAM" + date
-	Log(r).Info("Creating asset ", assetCode)
 
+	// Getting key value for for gam
 	assetType, err := Connector(r).GetUint32KeyValue("asset_type:gam")
 	if err != nil {
 		Log(r).WithError(err).Error("error getting key value for asset_type:gam")
@@ -58,27 +59,15 @@ func CreateGame(w http.ResponseWriter, r *http.Request) {
 	}
 	Log(r).Info("Got GAM asset_type=", assetType)
 
-	createGam := &xdrbuild.CreateAsset{
-		RequestID:                0,
-		Code:                     assetCode,
-		MaxIssuanceAmount:        IssuanceAmount,
-		PreIssuanceSigner:        Connector(r).Source().Address(),
-		InitialPreIssuanceAmount: IssuanceAmount,
-		TrailingDigitsCount:      6,
-		Policies:                 0,
-		Type:                     uint64(assetType),
-		CreatorDetails:           details,
-		AllTasks:                 nil,
-	}
-
-	respTx, err := Connector(r).SubmitSigned(r.Context(), nil, createGam)
+	// Creating asset GAM
+	err = createAsset(r, assetCode, uint64(assetType), details)
 	if err != nil {
-		Log(r).WithError(err).Error("error sending transaction")
+		Log(r).WithError(err).Error("error creating asset for asset_type:gam")
 		ape.RenderErr(w, problems.BadRequest(err)...)
 		return
 	}
 
-	respTx, err = donate(
+	respTx, err := donate(
 		r,
 		request.Data.Attributes.OwnerId,
 		assetCode,
@@ -86,7 +75,6 @@ func CreateGame(w http.ResponseWriter, r *http.Request) {
 		request.Data.Attributes.SourceBalanceId,
 		details,
 	)
-
 	if err != nil {
 		Log(r).WithError(err).Error("error donating")
 		ape.RenderErr(w, problems.BadRequest(err)...)
@@ -94,6 +82,29 @@ func CreateGame(w http.ResponseWriter, r *http.Request) {
 	}
 
 	ape.Render(w, respTx)
+}
+
+func createAsset(r *http.Request, assetCode string, assetType uint64, details json.RawMessage) error {
+	Log(r).Info("Creating asset ", assetCode)
+
+	createAsset := &xdrbuild.CreateAsset{
+		RequestID:                0,
+		Code:                     assetCode,
+		MaxIssuanceAmount:        IssuanceAmount,
+		PreIssuanceSigner:        Connector(r).Source().Address(),
+		InitialPreIssuanceAmount: IssuanceAmount,
+		TrailingDigitsCount:      6,
+		Policies:                 0,
+		Type:                     assetType,
+		CreatorDetails:           details,
+		AllTasks:                 nil,
+	}
+
+	_, err := Connector(r).SubmitSigned(r.Context(), nil, createAsset)
+	if err != nil {
+		return errors.Wrap(err, "error sending transaction for creating asset")
+	}
+	return nil
 }
 
 func loadBalance(r *http.Request, assetCode string, ownerID string) (*regources.Balance, error) {
