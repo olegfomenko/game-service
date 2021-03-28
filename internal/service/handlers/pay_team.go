@@ -16,17 +16,32 @@ func PayTeam(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	gam, err := Connector(r).Asset(request.Data.Attributes.)
+	dateSuffix := request.Data.Attributes.GameCoinId[3:]
+
+	tam1ID := "TAM1" + dateSuffix
+	tam2ID := "TAM2" + dateSuffix
+
+	gam, err := Connector(r).Asset(request.Data.Attributes.GameCoinId)
 	if err != nil {
 		Log(r).WithError(err).Error("error getting gam")
 		ape.RenderErr(w, problems.BadRequest(err)...)
 		return
 	}
 
+	var details = make(map[string]interface{})
+	json.Unmarshal(gam.Attributes.Details, &details)
+
+	team1 := details["team1"].(map[string]string)
+	team2 := details["team2"].(map[string]string)
+
+	if team1["name"] == request.Data.Attributes.TeamName {
+
+	}
+
 	respTx, err := donate(
 		r,
 		request.Data.Attributes.OwnerId,
-		request.Data.Attributes.GameCoinId,
+		tam1ID,
 		uint64(request.Data.Attributes.Amount),
 		request.Data.Attributes.SourceBalanceId,
 		json.RawMessage(gam.Attributes.Details),
