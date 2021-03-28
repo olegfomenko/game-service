@@ -12,6 +12,7 @@ allOf:
           - amount
           - source_balance_id
           - owner_id
+          - game_asset_id
         properties:
           team_name:
             type: string
@@ -22,3 +23,5 @@ allOf:
             type: string
           source_balance_id:
               type: string
+          game_asset_id:
+            type: string
