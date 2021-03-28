@@ -56,6 +56,7 @@ github.com/oklog/ulid
 # github.com/pelletier/go-toml v1.2.0
 github.com/pelletier/go-toml
 # github.com/pkg/errors v0.9.1
+## explicit
 github.com/pkg/errors
 # github.com/sirupsen/logrus v1.6.0
 github.com/sirupsen/logrus
@@ -128,7 +129,6 @@ gitlab.com/tokend/go/xdrbuild
 gitlab.com/tokend/go/xdrbuild/internal
 # gitlab.com/tokend/identity-storage v0.0.0-20210303191919-3ff99a92c0b3
 ## explicit
-gitlab.com/tokend/identity-storage/resources
 # gitlab.com/tokend/keypair v0.0.0-20190412110653-b9d7e0c8b312
 ## explicit
 gitlab.com/tokend/keypair
@@ -138,7 +138,9 @@ gitlab.com/tokend/keypair/internal/crc16
 gitlab.com/tokend/keypair/internal/strkey
 # gitlab.com/tokend/regources v4.9.1+incompatible
 ## explicit
+gitlab.com/tokend/regources
 gitlab.com/tokend/regources/generated
+gitlab.com/tokend/regources/v2
 # golang.org/x/crypto v0.0.0-20200820211705-5c72a883971a
 golang.org/x/crypto/ed25519
 golang.org/x/crypto/ed25519/internal/edwards25519

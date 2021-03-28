@@ -9,10 +9,11 @@ require (
 	github.com/certifi/gocertifi v0.0.0-20200922220541-2c3bb06c6054 // indirect
 	github.com/getsentry/raven-go v0.2.0 // indirect
 	github.com/go-chi/chi v4.1.2+incompatible
-	github.com/go-ozzo/ozzo-validation v3.6.0+incompatible // indirect
+	github.com/go-ozzo/ozzo-validation v3.6.0+incompatible
 	github.com/google/jsonapi v0.0.0-20210306203318-b10ff4bf785b // indirect
 	github.com/nullstyle/go-xdr v0.0.0-20180726165426-f4c839f75077 // indirect
 	github.com/oklog/ulid v1.3.1 // indirect
+	github.com/pkg/errors v0.9.1
 	gitlab.com/distributed_lab/ape v1.5.0
 	gitlab.com/distributed_lab/figure v2.1.0+incompatible
 	gitlab.com/distributed_lab/json-api-connector v0.2.3
@@ -21,7 +22,7 @@ require (
 	gitlab.com/distributed_lab/lorem v0.2.0 // indirect
 	gitlab.com/tokend/connectors v0.1.3
 	gitlab.com/tokend/go v3.14.0+incompatible
-	gitlab.com/tokend/identity-storage v0.0.0-20210303191919-3ff99a92c0b3
+	gitlab.com/tokend/identity-storage v0.0.0-20210303191919-3ff99a92c0b3 // indirect
 	gitlab.com/tokend/keypair v0.0.0-20190412110653-b9d7e0c8b312
 	gitlab.com/tokend/regources v4.9.1+incompatible
 )

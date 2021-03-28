@@ -31,6 +31,7 @@ type Connector struct {
 	balances     *balancesGetter
 	assetsGetter *assetsGetter
 	kv           *kvGetter
+	requests     *requestsGetter
 
 	*lazyinfo.LazyInfoer
 
@@ -40,12 +41,16 @@ type Connector struct {
 
 func NewConnector(cli *signed.Client, source keypair.Address, signer keypair.Full) *Connector {
 	return &Connector{
-		cli:        cli,
-		Submitter:  submit.New(cli),
-		Connector:  horizon.NewConnector(cli),
-		LazyInfoer: lazyinfo.New(cli),
-		source:     source,
-		signer:     signer,
+		cli:          cli,
+		Submitter:    submit.New(cli),
+		Connector:    horizon.NewConnector(cli),
+		LazyInfoer:   lazyinfo.New(cli),
+		source:       source,
+		signer:       signer,
+		balances:     &balancesGetter{},
+		assetsGetter: &assetsGetter{},
+		kv:           &kvGetter{},
+		requests:     &requestsGetter{},
 	}
 }
 
