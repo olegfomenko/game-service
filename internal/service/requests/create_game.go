@@ -21,7 +21,7 @@ func NewCreateGame(r *http.Request) (resources.CreateGameResponse, error) {
 func validateCreateGame(r resources.CreateGameResponse) error {
 	return validation.Errors{
 		"/data/attributes/new_competition": validation.Validate(r.Data.Attributes.NameCompetition, validation.Required),
-		"/data/attributes/price":           validation.Validate(r.Data.Attributes.Amount, validation.Required),
+		"/data/attributes/amount":          validation.Validate(r.Data.Attributes.Amount, validation.Required),
 		"/data/attributes/team1": validation.Validate(
 			r.Data.Attributes.Team1, validation.Required, validation.Length(6, 6)),
 		"/data/attributes/team2": validation.Validate(
