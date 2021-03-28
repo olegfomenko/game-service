@@ -8,7 +8,7 @@ import (
 )
 
 func (c *Connector) Balance(account, asset string) (*regources.Balance, error) {
-	response, err := c.balances.get(c, account, asset)
+	response, err := c.balances.get(c, &account, asset)
 
 	if err != nil {
 		return nil, err
@@ -21,8 +21,17 @@ func (c *Connector) Balance(account, asset string) (*regources.Balance, error) {
 	return &response.Data[0], err
 }
 
+func (c *Connector) Balances(asset string) ([]regources.Balance, error) {
+	response, err := c.balances.get(c, nil, asset)
+	if err != nil {
+		return nil, err
+	}
+
+	return response.Data, err
+}
+
 func (c *Connector) BalanceWithState(account, asset string) (*regources.Balance, *regources.BalanceState, error) {
-	response, err := c.balances.get(c, account, asset)
+	response, err := c.balances.get(c, &account, asset)
 	if err != nil {
 		return nil, nil, err
 	}
@@ -43,11 +52,11 @@ func (c *Connector) GetBalanceByID(balanceID string) (*regources.Balance, error)
 
 type balancesGetter struct{}
 
-func (g *balancesGetter) get(connector *Connector, account, asset string) (*regources.BalanceListResponse, error) {
+func (g *balancesGetter) get(connector *Connector, account *string, asset string) (*regources.BalanceListResponse, error) {
 	var response regources.BalanceListResponse
 	err := connector.List("/v3/balances", &balancesFilters{
 		Asset: &asset,
-		Owner: &account,
+		Owner: account,
 
 		IncludeState: true,
 	}).Next(&response)
