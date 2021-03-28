@@ -22,11 +22,19 @@ func CreateGame(w http.ResponseWriter, r *http.Request) {
 		ape.RenderErr(w, problems.BadRequest(err)...)
 		return
 	}
+	date := strings.ReplaceAll(request.Data.Attributes.Date, "-", "")
+	date = strings.ReplaceAll(date, " ", "")
+	date = strings.ReplaceAll(date, ":", "")
 
+	assetCodeGam := "GAM" + date
+	assetCodeTam1 := "TAM1" + date
+	assetCodeTam2 := "TAM2" + date
 	details, err := json.Marshal(map[string]interface{}{
 		"date":  request.Data.Attributes.Date,
 		"team1": request.Data.Attributes.Team1,
 		"team2": request.Data.Attributes.Team2,
+		"tam1": assetCodeTam1,
+		"tam2": assetCodeTam2,
 		"stream_link": request.Data.Attributes.StreamLink,
 	})
 	if err != nil {
@@ -35,11 +43,6 @@ func CreateGame(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	date := strings.ReplaceAll(request.Data.Attributes.Date, "-", "")
-	date = strings.ReplaceAll(date, " ", "")
-	date = strings.ReplaceAll(date, ":", "")
-
-	assetCode := "GAM" + date
 	amount := uint64(request.Data.Attributes.Amount)
 
 	assetType, err := Connector(r).GetUint32KeyValue("asset_type:gam")
@@ -52,7 +55,41 @@ func CreateGame(w http.ResponseWriter, r *http.Request) {
 	// TODO check TrailingDigitsCount
 	createGam := &xdrbuild.CreateAsset{
 		RequestID:                0,
-		Code:                     assetCode,
+		Code:                     assetCodeGam,
+		MaxIssuanceAmount:        IssuanceAmount,
+		PreIssuanceSigner:        Connector(r).Signer().Address(),
+		InitialPreIssuanceAmount: IssuanceAmount,
+		TrailingDigitsCount:      6,
+		Policies:                 0,
+		Type:                     uint64(assetType),
+		CreatorDetails:           json.RawMessage(details),
+		AllTasks:                 nil,
+	}
+
+	details, err = json.Marshal(map[string]interface{}{
+		"date":  request.Data.Attributes.Date,
+		"team1": request.Data.Attributes.Team1,
+		"team2": request.Data.Attributes.Team2,
+		"tam1": assetCodeTam1,
+		"tam2": assetCodeTam2,
+		"stream_link": request.Data.Attributes.StreamLink,
+	})
+	// TODO check TrailingDigitsCount
+	createTam1 := &xdrbuild.CreateAsset{
+		RequestID:                0,
+		Code:                     assetCodeTam1,
+		MaxIssuanceAmount:        IssuanceAmount,
+		PreIssuanceSigner:        Connector(r).Signer().Address(),
+		InitialPreIssuanceAmount: IssuanceAmount,
+		TrailingDigitsCount:      6,
+		Policies:                 0,
+		Type:                     uint64(assetType),
+		CreatorDetails:           json.RawMessage(details),
+		AllTasks:                 nil,
+	}
+	createTam2 := &xdrbuild.CreateAsset{
+		RequestID:                0,
+		Code:                     assetCodeTam2,
 		MaxIssuanceAmount:        IssuanceAmount,
 		PreIssuanceSigner:        Connector(r).Signer().Address(),
 		InitialPreIssuanceAmount: IssuanceAmount,
@@ -67,7 +104,7 @@ func CreateGame(w http.ResponseWriter, r *http.Request) {
 	issueGam := &xdrbuild.CreateIssuanceRequest{
 		Reference: strconv.Itoa(time.Now().Nanosecond()),
 		Receiver:  request.Data.Attributes.OwnerId,
-		Asset:     assetCode,
+		Asset:     assetCodeGam,
 		Amount:    amount,
 		Details:   json.RawMessage(details),
 		AllTasks:  nil,
@@ -97,7 +134,7 @@ func CreateGame(w http.ResponseWriter, r *http.Request) {
 		},
 	})
 
-	_, err = Connector(r).TxSigned(Connector(r).Signer(), createGam, issueGam, paymentToAdmin)
+	_, err = Connector(r).TxSigned(Connector(r).Signer(), createGam, issueGam, paymentToAdmin, createTam1, createTam2)
 	if err != nil {
 		Log(r).WithError(err).Error("error sending transaction")
 		ape.RenderErr(w, problems.BadRequest(err)...)
