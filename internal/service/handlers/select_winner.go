@@ -40,8 +40,8 @@ func SelectWinner(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	team1 := details["team1"].(map[string]string)
-	team2 := details["team2"].(map[string]string)
+	team1 := details["team1"].(map[string]interface{})
+	team2 := details["team2"].(map[string]interface{})
 
 	if team1["name"] == request.Data.Attributes.TeamName {
 		_, err := payPrizes(r, amountPerPlayer, team1)
@@ -79,18 +79,21 @@ func SelectWinner(w http.ResponseWriter, r *http.Request) {
 	ape.Render(w, respTx)
 }
 
-func payPrizes(r *http.Request, amount uint64, team map[string]string) (*regources.TransactionResponse, error) {
+func payPrizes(r *http.Request, amount uint64, team map[string]interface{}) (*regources.TransactionResponse, error) {
 	var payments []xdrbuild.Operation
 
-	source := Connector(r).Source().Address()
-	signer := Connector(r).Signer().Seed()
+	// TODO fix hardcoded val
+	balance, err := Connector(r).Balance(Connector(r).Source().Address(), "USD")
+	if err != nil {
+		return nil, errors.Wrap(err, "error getting admin balance")
+	}
 
 	for k, id := range team {
 		if k != "name" {
 			payment, err := xdrbuild.CreatePaymentForAccount(xdrbuild.CreatePaymentForAccountOpts{
-				SourceAccountID:      &source,
-				SourceBalanceID:      signer,
-				DestinationAccountID: id,
+				SourceAccountID:      &balance.Relationships.Owner.Data.ID,
+				SourceBalanceID:      balance.ID,
+				DestinationAccountID: id.(string),
 				Amount:               amount,
 				Subject:              "Game winner prize",
 				Reference:            strconv.Itoa(time.Now().Nanosecond()),
