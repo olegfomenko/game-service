@@ -8,11 +8,14 @@ allOf:
       attributes:
         type: object
         required:
+          - game_coin_id
           - team_name
           - amount
           - source_balance_id
           - owner_id
         properties:
+          game_coin_id:
+            type: string
           team_name:
             type: string
           amount:

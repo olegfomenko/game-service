@@ -8,6 +8,7 @@ import regources "gitlab.com/tokend/regources/generated"
 
 type PayTeamAttributes struct {
 	Amount          regources.Amount `json:"amount"`
+	GameCoinId      string           `json:"game_coin_id"`
 	OwnerId         string           `json:"owner_id"`
 	SourceBalanceId string           `json:"source_balance_id"`
 	TeamName        string           `json:"team_name"`

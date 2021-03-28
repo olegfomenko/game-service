@@ -26,8 +26,10 @@ func CreateGame(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
+	//////////////////////// GAM ////////////////////////
+
 	// Parsing details
-	details, err := parseDetails(map[string]interface{}{
+	detailsGAM, err := parseDetails(map[string]interface{}{
 		"organizer":        request.Data.Attributes.OwnerId,
 		"date":             request.Data.Attributes.Date,
 		"team1":            request.Data.Attributes.Team1,
@@ -48,32 +50,73 @@ func CreateGame(w http.ResponseWriter, r *http.Request) {
 		ape.RenderErr(w, problems.BadRequest(err)...)
 		return
 	}
-	assetCode := "GAM" + date
+	assetCodeGAM := "GAM" + date
 
-	// Getting key value for for gam
-	assetType, err := Connector(r).GetUint32KeyValue("asset_type:gam")
+	// Getting key value for for GAM
+	assetTypeGAM, err := Connector(r).GetUint32KeyValue("asset_type:gam")
 	if err != nil {
 		Log(r).WithError(err).Error("error getting key value for asset_type:gam")
 		ape.RenderErr(w, problems.BadRequest(err)...)
 		return
 	}
-	Log(r).Info("Got GAM asset_type=", assetType)
+	Log(r).Info("Got GAM asset_type=", assetTypeGAM)
 
 	// Creating asset GAM
-	err = createAsset(r, assetCode, uint64(assetType), details)
+	err = createAsset(r, assetCodeGAM, uint64(assetTypeGAM), detailsGAM)
 	if err != nil {
 		Log(r).WithError(err).Error("error creating asset for asset_type:gam")
 		ape.RenderErr(w, problems.BadRequest(err)...)
 		return
 	}
 
+	//////////////////////// TAM ////////////////////////
+
+	// Parsing details
+	detailsTAM1, _ := parseDetails(map[string]interface{}{
+		"gam":  assetCodeGAM,
+		"team": request.Data.Attributes.Team1,
+	})
+	detailsTAM2, _ := parseDetails(map[string]interface{}{
+		"gam":  assetCodeGAM,
+		"team": request.Data.Attributes.Team2,
+	})
+
+	assetCodeTAM1 := "TAM1" + date
+	assetCodeTAM2 := "TAM2" + date
+
+	// Getting key value for for TAM
+	assetTypeTAM, err := Connector(r).GetUint32KeyValue("asset_type:tam")
+	if err != nil {
+		Log(r).WithError(err).Error("error getting key value for asset_type:tam")
+		ape.RenderErr(w, problems.BadRequest(err)...)
+		return
+	}
+	Log(r).Info("Got TAM asset_type=", assetTypeTAM)
+
+	// Creating asset TAM
+	err = createAsset(r, assetCodeTAM1, uint64(assetTypeTAM), detailsTAM1)
+	if err != nil {
+		Log(r).WithError(err).Error("error creating asset for asset_type:tam")
+		ape.RenderErr(w, problems.BadRequest(err)...)
+		return
+	}
+
+	err = createAsset(r, assetCodeTAM2, uint64(assetTypeTAM), detailsTAM2)
+	if err != nil {
+		Log(r).WithError(err).Error("error creating asset for asset_type:tam")
+		ape.RenderErr(w, problems.BadRequest(err)...)
+		return
+	}
+
+	/////////////////// payment ///////////////////
+
 	respTx, err := donate(
 		r,
 		request.Data.Attributes.OwnerId,
-		assetCode,
+		assetCodeGAM,
 		uint64(request.Data.Attributes.Amount),
 		request.Data.Attributes.SourceBalanceId,
-		details,
+		detailsGAM,
 	)
 	if err != nil {
 		Log(r).WithError(err).Error("error donating")
@@ -136,12 +179,12 @@ func loadBalance(r *http.Request, assetCode string, ownerID string) (*regources.
 	return gamBalance, nil
 }
 
-func donate(r *http.Request, ownerID string, gamAsset string, amount uint64, sourceBalance string, details json.RawMessage) (*regources.TransactionResponse, error) {
-	gamBalance, err := loadBalance(r, gamAsset, ownerID)
+func donate(r *http.Request, ownerID string, asset string, amount uint64, sourceBalance string, details json.RawMessage) (*regources.TransactionResponse, error) {
+	assetBalance, err := loadBalance(r, asset, ownerID)
 	if err != nil {
 		return nil, err
 	}
-	Log(r).Info("Got organizer gam balance", gamBalance.ID)
+	Log(r).Info("Got asset balance", assetBalance.ID)
 
 	tasks := uint32(1)
 
@@ -161,15 +204,15 @@ func donate(r *http.Request, ownerID string, gamAsset string, amount uint64, sou
 		return nil, err
 	}
 
-	issueGam := &xdrbuild.CreateIssuanceRequest{
+	issueAsset := &xdrbuild.CreateIssuanceRequest{
 		Reference: strconv.Itoa(time.Now().Nanosecond()),
-		Receiver:  gamBalance.ID,
-		Asset:     gamAsset,
+		Receiver:  assetBalance.ID,
+		Asset:     asset,
 		Amount:    amount,
 		Details:   details,
 		AllTasks:  nil,
 	}
-	Log(r).Info("Issuing asset operation:", issueGam)
+	Log(r).Info("Issuing asset operation:", issueAsset)
 
 	requests, err := Connector(r).GetRedemptionRequests(21, 1)
 	if err != nil {
@@ -202,7 +245,7 @@ func donate(r *http.Request, ownerID string, gamAsset string, amount uint64, sou
 	Log(r).Info("Review operation:", reviewOrg)
 	Log(r).Info(id, " ", req.Attributes.Hash, " ", *req.Attributes.Reference)
 
-	respTx, err = Connector(r).SubmitSigned(r.Context(), nil, reviewOrg, issueGam)
+	respTx, err = Connector(r).SubmitSigned(r.Context(), nil, reviewOrg, issueAsset)
 	if err != nil {
 		return nil, err
 	}
