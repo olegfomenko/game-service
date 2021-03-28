@@ -2,6 +2,7 @@ package handlers
 
 import (
 	"encoding/json"
+	"github.com/olegfomenko/game-service/internal/horizon"
 	"github.com/olegfomenko/game-service/internal/service/requests"
 	"github.com/pkg/errors"
 	"gitlab.com/distributed_lab/ape"
@@ -77,33 +78,65 @@ func CreateGame(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	createGamBalance := &xdrbuild.ManageBalanceOp{
-		Action:      xdr.ManageBalanceActionCreate,
-		Destination: request.Data.Attributes.OwnerId,
-		AssetCode:   assetCode,
-	}
+	respTx, err = donate(
+		r,
+		request.Data.Attributes.OwnerId,
+		assetCode,
+		uint64(request.Data.Attributes.Amount),
+		request.Data.Attributes.SourceBalanceId,
+		details,
+	)
 
-	respTx, err = Connector(r).SubmitSigned(r.Context(), nil, createGamBalance)
 	if err != nil {
-		Log(r).WithError(err).Error("error sending transaction")
+		Log(r).WithError(err).Error("error donating")
 		ape.RenderErr(w, problems.BadRequest(err)...)
 		return
 	}
 
-	gamBalance, err := Connector(r).Balance(request.Data.Attributes.OwnerId, assetCode)
+	ape.Render(w, respTx)
+}
+
+func loadBalance(r *http.Request, assetCode string, ownerID string) (*regources.Balance, error) {
+	gamBalance, err := Connector(r).Balance(ownerID, assetCode)
+
+	if err == horizon.ErrNotFound || err == horizon.ErrDataEmpty {
+		Log(r).Info("Crating new balance for user ", ownerID)
+		createBalance := &xdrbuild.ManageBalanceOp{
+			Action:      xdr.ManageBalanceActionCreate,
+			Destination: ownerID,
+			AssetCode:   assetCode,
+		}
+
+		_, err := Connector(r).SubmitSigned(r.Context(), nil, createBalance)
+		if err != nil {
+			return nil, err
+		}
+
+		gamBalance, err := Connector(r).Balance(ownerID, assetCode)
+		if err != nil {
+			return nil, err
+		}
+
+		return gamBalance, nil
+	} else if err != nil {
+		return nil, err
+	}
+
+	return gamBalance, nil
+}
+
+func donate(r *http.Request, ownerID string, gamAsset string, amount uint64, sourceBalance string, details json.RawMessage) (*regources.TransactionResponse, error) {
+	gamBalance, err := loadBalance(r, gamAsset, ownerID)
 	if err != nil {
-		Log(r).WithError(err).Error("error getting organizer gam balance")
-		ape.RenderErr(w, problems.BadRequest(err)...)
-		return
+		return nil, err
 	}
 	Log(r).Info("Got organizer gam balance", gamBalance.ID)
 
-	amount := uint64(request.Data.Attributes.Amount)
 	tasks := uint32(1)
 
 	paymentReference := strconv.Itoa(time.Now().Nanosecond())
 	payment := xdrbuild.CreateRedemptionRequest{
-		SourceBalanceID:      request.Data.Attributes.SourceBalanceId,
+		SourceBalanceID:      sourceBalance,
 		DestinationAccountID: Connector(r).Signer().Address(),
 		Amount:               amount,
 		Reference:            paymentReference,
@@ -112,17 +145,15 @@ func CreateGame(w http.ResponseWriter, r *http.Request) {
 	}
 	Log(r).Info("Payment operation:", payment)
 
-	respTx, err = Connector(r).SubmitSigned(r.Context(), nil, payment)
+	respTx, err := Connector(r).SubmitSigned(r.Context(), nil, payment)
 	if err != nil {
-		Log(r).WithError(err).Error("error sending transaction")
-		ape.RenderErr(w, problems.BadRequest(err)...)
-		return
+		return nil, err
 	}
 
 	issueGam := &xdrbuild.CreateIssuanceRequest{
 		Reference: strconv.Itoa(time.Now().Nanosecond()),
 		Receiver:  gamBalance.ID,
-		Asset:     assetCode,
+		Asset:     gamAsset,
 		Amount:    amount,
 		Details:   details,
 		AllTasks:  nil,
@@ -130,16 +161,21 @@ func CreateGame(w http.ResponseWriter, r *http.Request) {
 	Log(r).Info("Issuing asset operation:", issueGam)
 
 	requests, err := Connector(r).GetRedemptionRequests(21, 1)
-	var req *regources.ReviewableRequest = nil
+	if err != nil {
+		return nil, err
+	}
 
+	var req *regources.ReviewableRequest = nil
 	for _, r := range requests {
 		if *r.Attributes.Reference == paymentReference {
 			req = &r
 		}
 	}
+	if req == nil {
+		return nil, errors.New("cannot find redemption")
+	}
 
 	id, _ := strconv.Atoi(req.ID)
-
 	reviewOrg := xdrbuild.ReviewRequest{
 		ID:      uint64(id),
 		Hash:    &req.Attributes.Hash,
@@ -157,12 +193,10 @@ func CreateGame(w http.ResponseWriter, r *http.Request) {
 
 	respTx, err = Connector(r).SubmitSigned(r.Context(), nil, reviewOrg, issueGam)
 	if err != nil {
-		Log(r).WithError(err).Error("error sending transaction")
-		ape.RenderErr(w, problems.BadRequest(err)...)
-		return
+		return nil, err
 	}
 
-	ape.Render(w, respTx)
+	return respTx, nil
 }
 
 func parseGameDate(date string) (string, error) {

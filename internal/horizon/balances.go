@@ -9,8 +9,13 @@ import (
 
 func (c *Connector) Balance(account, asset string) (*regources.Balance, error) {
 	response, err := c.balances.get(c, account, asset)
+
 	if err != nil {
 		return nil, err
+	}
+
+	if len(response.Data) == 0 {
+		return nil, ErrNotFound
 	}
 
 	return &response.Data[0], err
