@@ -16,6 +16,8 @@ allOf:
           - asset_code
           - source_balance_id
           - owner_id
+          - stream_link
+          - payment_tx
         properties:
           owner_id:
             type: string
@@ -35,4 +37,6 @@ allOf:
           team2:
             type: object
           stream_link:
+            type: string
+          payment_tx:
             type: string

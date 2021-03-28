@@ -12,8 +12,9 @@ type CreateGameAttributes struct {
 	Date            string                 `json:"date"`
 	NameCompetition string                 `json:"name_competition"`
 	OwnerId         string                 `json:"owner_id"`
+	PaymentTx       string                 `json:"payment_tx"`
 	SourceBalanceId string                 `json:"source_balance_id"`
-	StreamLink      *string                `json:"stream_link,omitempty"`
+	StreamLink      string                 `json:"stream_link"`
 	Team1           map[string]interface{} `json:"team1"`
 	Team2           map[string]interface{} `json:"team2"`
 }
