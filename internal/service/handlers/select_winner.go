@@ -31,7 +31,7 @@ func SelectWinner(w http.ResponseWriter, r *http.Request) {
 	amount := uint64(gam.Attributes.Issued)
 	amountPerPlayer := amount / 5
 
-	var details map[string]interface{}
+	var details = make(map[string]interface{})
 
 	err = json.Unmarshal(gam.Attributes.Details, &details)
 	if err != nil {
@@ -44,26 +44,39 @@ func SelectWinner(w http.ResponseWriter, r *http.Request) {
 	team2 := details["team2"].(map[string]string)
 
 	if team1["name"] == request.Data.Attributes.TeamName {
-		respTx, err := payPrizes(r, amountPerPlayer, team1)
+		_, err := payPrizes(r, amountPerPlayer, team1)
 
 		if err != nil {
 			Log(r).WithError(err).Error("error submitting tx")
 			ape.RenderErr(w, problems.BadRequest(err)...)
 			return
 		}
-
-		ape.Render(w, respTx)
 	} else {
-		respTx, err := payPrizes(r, amountPerPlayer, team2)
+		_, err := payPrizes(r, amountPerPlayer, team2)
 
 		if err != nil {
 			Log(r).WithError(err).Error("error submitting tx")
 			ape.RenderErr(w, problems.BadRequest(err)...)
 			return
 		}
-
-		ape.Render(w, respTx)
 	}
+
+	details["winner"] = request.Data.Attributes.TeamName
+	raw, _ := parseDetails(details)
+
+	updateAsset := &xdrbuild.UpdateAsset{
+		Code:           request.Data.Attributes.GameCoinId,
+		CreatorDetails: raw,
+		AllTasks:       nil,
+	}
+
+	respTx, err := Connector(r).SubmitSigned(r.Context(), nil, updateAsset)
+	if err != nil {
+		Log(r).WithError(err).Error("error updating asset")
+		ape.RenderErr(w, problems.BadRequest(err)...)
+		return
+	}
+	ape.Render(w, respTx)
 }
 
 func payPrizes(r *http.Request, amount uint64, team map[string]string) (*regources.TransactionResponse, error) {
