@@ -55,7 +55,7 @@ horizon:
 ```
 
 docker-composer for running (edited from TokenD dev edition)
-```
+```yaml
 version: '3.3'
 
 services:
@@ -216,7 +216,7 @@ volumes:
   redis-data:
 ```
 Also you need to add some rules to corporate user account by adding to docker-compose 
-```
+```yaml
    init-rule:
        image: olegfomenko2002/bua2021:init-rule 
 ```
