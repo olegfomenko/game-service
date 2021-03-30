@@ -2,6 +2,7 @@ package handlers
 
 import (
 	"encoding/json"
+	"github.com/olegfomenko/game-service/internal/horizon"
 	"github.com/pkg/errors"
 	"gitlab.com/tokend/go/xdr"
 	"gitlab.com/tokend/go/xdrbuild"
@@ -83,6 +84,35 @@ func donate(r *http.Request, ownerID string, gamAsset string, amount uint64, sou
 	}
 
 	return respTx, nil
+}
+
+func loadBalance(r *http.Request, assetCode string, ownerID string) (*regources.Balance, error) {
+	gamBalance, err := Connector(r).Balance(ownerID, assetCode)
+
+	if err == horizon.ErrNotFound || err == horizon.ErrDataEmpty {
+		Log(r).Info("Crating new balance for user ", ownerID)
+		createBalance := &xdrbuild.ManageBalanceOp{
+			Action:      xdr.ManageBalanceActionCreate,
+			Destination: ownerID,
+			AssetCode:   assetCode,
+		}
+
+		_, err := Connector(r).SubmitSigned(r.Context(), nil, createBalance)
+		if err != nil {
+			return nil, err
+		}
+
+		gamBalance, err := Connector(r).Balance(ownerID, assetCode)
+		if err != nil {
+			return nil, err
+		}
+
+		return gamBalance, nil
+	} else if err != nil {
+		return nil, err
+	}
+
+	return gamBalance, nil
 }
 
 func parseDetails(details map[string]interface{}) (json.RawMessage, error) {

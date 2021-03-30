@@ -1,14 +1,11 @@
 package handlers
 
 import (
-	"github.com/olegfomenko/game-service/internal/horizon"
 	"github.com/olegfomenko/game-service/internal/service/requests"
 	"github.com/pkg/errors"
 	"gitlab.com/distributed_lab/ape"
 	"gitlab.com/distributed_lab/ape/problems"
-	"gitlab.com/tokend/go/xdr"
 	"gitlab.com/tokend/go/xdrbuild"
-	regources "gitlab.com/tokend/regources/generated"
 	"net/http"
 	"strings"
 )
@@ -91,35 +88,6 @@ func CreateGame(w http.ResponseWriter, r *http.Request) {
 	}
 
 	ape.Render(w, respTx)
-}
-
-func loadBalance(r *http.Request, assetCode string, ownerID string) (*regources.Balance, error) {
-	gamBalance, err := Connector(r).Balance(ownerID, assetCode)
-
-	if err == horizon.ErrNotFound || err == horizon.ErrDataEmpty {
-		Log(r).Info("Crating new balance for user ", ownerID)
-		createBalance := &xdrbuild.ManageBalanceOp{
-			Action:      xdr.ManageBalanceActionCreate,
-			Destination: ownerID,
-			AssetCode:   assetCode,
-		}
-
-		_, err := Connector(r).SubmitSigned(r.Context(), nil, createBalance)
-		if err != nil {
-			return nil, err
-		}
-
-		gamBalance, err := Connector(r).Balance(ownerID, assetCode)
-		if err != nil {
-			return nil, err
-		}
-
-		return gamBalance, nil
-	} else if err != nil {
-		return nil, err
-	}
-
-	return gamBalance, nil
 }
 
 func parseGameDate(date string) (string, error) {
